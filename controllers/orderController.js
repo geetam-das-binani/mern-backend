@@ -88,13 +88,16 @@ exports.getAllOrders = async (req, res, next) => {
       message: "No orders found",
     });
   }
-};
+}; 
 
 // update order status ---admin
 
 exports.updateOrder = async (req, res, next) => {
   const order = await Order.findById(req.params.id);
-  if (order.paymentInfo.orderStatus === "Delievered") {
+  if (!order) {
+    return next(new ErrorHandler("Order not found with this id", 404));
+  }
+  if (order.paymentInfo.orderStatus === "Delivered") {
     return next(
       new ErrorHandler("You have already delievered this order", 404)
     );
@@ -104,7 +107,7 @@ exports.updateOrder = async (req, res, next) => {
   );
   order.paymentInfo.orderStatus = req.body.status;
   if (req.body.status === "Delivered") {
-    order.deliveredAt = Date.now();
+    order.paymentInfo.deliveredAt = Date.now();
   }
 
   await order.save({ validateBeforeSave: false });
