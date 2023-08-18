@@ -19,15 +19,16 @@ class ApiFeatures {
   }
   filter() {
     const queryCopy = { ...this.queryStr };
-    // console.log(queryCopy);
+
     //  Remove some fields for cateogry
     const removeFields = ["keyword", "page", "limit"];
     removeFields.forEach((key) => delete queryCopy[key]);
-    let queryStr = JSON.stringify(queryCopy);
-    queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (key) => `$${key}`);
-    // console.log(queryCopy);
 
-    this.query = this.query.find(JSON.parse(queryStr));
+    let queryStr = JSON.stringify(queryCopy);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (key) => `$${key}`);
+
+    this.query = this.query.model.find(JSON.parse(queryStr));
+
     return this;
   }
   pagination(resultsPerPage) {

@@ -6,9 +6,11 @@ const connect = require("./connection/databaseConnect");
 const productRoute = require("./routes/productroutes");
 const userRoute = require("./routes/userRoutes");
 const orderRoute = require("./routes/orderRoutes");
-
+const cors=require('cors')
 const errorMiddleware = require("./middleware/error");
+
 const app = express();
+app.use(cors())
 app.use(express.json());
 dotenv.config({ path: path.join(__dirname, "./config/config.env") });
 // handling uncaught ecxeption
@@ -16,7 +18,7 @@ process.on("uncaughtException", (err) => {
   console.log(`Error being ${err.message}`);
   console.log("Shutting down the server due to uncaught Exception ");
 
-  process.exit(1);
+  process.exit(1); 
 });
 
 connect(process.env.NAME, process.env.PASSWORD);
