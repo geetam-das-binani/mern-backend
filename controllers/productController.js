@@ -27,7 +27,7 @@ exports.getAllProducts = async (req, res, next) => {
   const resultsPerPage = 5;
   const productCounts =await Product.countDocuments();
   const apiFeature =  new ApiFeatures(Product.find(), req.query)
-    .search()
+    .search() 
     .filter()
     .pagination(resultsPerPage);
 
