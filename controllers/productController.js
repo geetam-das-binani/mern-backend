@@ -2,7 +2,6 @@ const Product = require("../model/productSchema");
 const ErrorHandler = require("../utils/errorhandler");
 const ApiFeatures = require("../utils/apifeatures");
 
-
 // create product --Admin
 exports.createProduct = async (req, res, next) => {
   try {
@@ -25,20 +24,19 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   const resultsPerPage = 8;
-  const productCounts =await Product.countDocuments();
-  const apiFeature =  new ApiFeatures(Product.find(), req.query)
-    .search() 
+  const productCounts = await Product.countDocuments();
+  const apiFeature = new ApiFeatures(Product.find(), req.query)
+    .search()
     .filter()
     .pagination(resultsPerPage);
 
-  const products = await apiFeature.query; 
-  
- 
+  const products = await apiFeature.query;
+
   if (!products) {
     return next(new ErrorHandler("Products haven't found", 404));
   }
   res.status(200).json({
-    success: true, 
+    success: true,
     products,
     productCounts,
   });
