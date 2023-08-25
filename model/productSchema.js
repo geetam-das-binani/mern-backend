@@ -4,17 +4,17 @@ const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please Enter product Name"],
-    trim: true,
+    trim: true, 
   },
   description: {
     type: String,
     required: [true, "Please Enter product  description"],
-  },
+  }, 
   price: {
     type: Number,
     required: [true, "Please Enter product  price"],
     maxLength: [8, "Price cannot exceed 8 characters"],
-  },
+  },   
   category: {
     type: String,
     required: [true, "Please Enter product  category"],

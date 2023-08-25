@@ -30,6 +30,7 @@ exports.getAllProducts = async (req, res, next) => {
     .search()
     .filter()
   
+    
   let products = await apiFeature.query;
   let filteredProductsCount = products.length;
   const apiFeatures = new ApiFeatures(Product.find(), req.query)
