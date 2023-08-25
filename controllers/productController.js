@@ -29,9 +29,14 @@ exports.getAllProducts = async (req, res, next) => {
   const apiFeature = new ApiFeatures(Product.find(), req.query)
     .search()
     .filter()
+  
+  let products = await apiFeature.query;
+  let filteredProductsCount = products.length;
+  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+    .search()
+    .filter()
     .pagination(resultsPerPage);
-
-  const products = await apiFeature.query;
+  products = await apiFeatures.query;
 
   if (!products) {
     return next(new ErrorHandler("Products haven't found", 404));
@@ -40,7 +45,8 @@ exports.getAllProducts = async (req, res, next) => {
     success: true,
     products,
     productCounts,
-    resultsPerPage
+    resultsPerPage,
+    filteredProductsCount,
   });
 };
 
