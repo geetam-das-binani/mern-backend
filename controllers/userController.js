@@ -2,9 +2,16 @@ const ErrorHandler = require("../utils/errorhandler");
 const User = require("../model/userSchema");
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
-const crypto = require("crypto");
+const cloudinary = require("cloudinary");
+
 // Register user
 exports.registerUser = async (req, res, next) => {
+  const mycloud = await cloudinary.uploader.upload(req.body.avatar, {
+    folder: "avatars",
+    width: 150,
+    crop: "scale",
+  });
+
   const { name, email, password } = req.body;
 
   try {
@@ -13,15 +20,16 @@ exports.registerUser = async (req, res, next) => {
       email,
       password,
       avatar: {
-        public_id: "sample id",
-        url: "ProfilePic Url",
+        public_id: mycloud.public_id,
+        url: mycloud.secure_url,
       },
     });
     sendToken(user, 201, res);
   } catch (e) {
     res.status(404).json({
       success: false,
-      message: `User not created error being ${e.message}`,
+      errorMessage: ` ${e.message.split(' ').slice(4,12).join(' ')}`,
+    
     });
   }
 };
@@ -246,8 +254,7 @@ exports.deleteUser = async (req, res, next) => {
   user = await User.deleteOne({ _id: req.params.id });
   res.status(200).json({
     success: true,
-    message: "User deleted successfully" ,
-    message: "User deleted successfully" ,
-    
+    message: "User deleted successfully",
+    message: "User deleted successfully",
   });
 };

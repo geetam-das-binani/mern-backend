@@ -39,7 +39,7 @@ exports.getAllProducts = async (req, res, next) => {
     .pagination(resultsPerPage);
   products = await apiFeatures.query;
 
-  if (!products) {
+  if (!products) { 
     return next(new ErrorHandler("Products haven't found", 404));
   }
   res.status(200).json({
