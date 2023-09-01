@@ -12,7 +12,11 @@ const cloudinary = require("cloudinary").v2;
 
 const fileUpload=require('express-fileupload')
 const app = express();
-app.use(cors());
+app.use('*',cors({
+  origin:true,
+  credentials:true
+}))
+
 app.use(fileUpload())
 app.use(express.json());
 app.use(cookieParser());

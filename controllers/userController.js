@@ -34,6 +34,9 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
+
+
+
 // LOGIN User
 
 exports.loginUser = async (req, res, next) => {
@@ -62,7 +65,7 @@ exports.logOut = async (req, res, next) => {
   try {
     res.cookie("token", null, {
       expires: new Date(Date.now()),
-      httponly: true,
+      httpOnly: true,
     });
     res.status(200).json({
       success: true,
