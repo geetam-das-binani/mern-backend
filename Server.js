@@ -11,17 +11,17 @@ const errorMiddleware = require("./middleware/error");
 const cloudinary = require("cloudinary").v2;
 
 const fileUpload=require('express-fileupload')
-const app = express();
-app.use('*',cors({
-  origin:true,
+const app = express();  
+app.use('*',cors({ 
+  origin:true, 
   credentials:true
-}))
-
-app.use(fileUpload())
+}))    
+  
+app.use(fileUpload())    
 app.use(express.json());
 app.use(cookieParser());
 
-
+ 
 app.use(express.urlencoded({ extended: true }));
 
 dotenv.config({ path: path.join(__dirname, "./config/config.env") });
