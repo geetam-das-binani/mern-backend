@@ -192,8 +192,8 @@ exports.updateUser = async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "User updated",
-    user,
+   
+    
   });
 };
 
@@ -258,6 +258,6 @@ exports.deleteUser = async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "User deleted successfully",
-    message: "User deleted successfully",
+   
   });
 };
