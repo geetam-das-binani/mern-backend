@@ -28,14 +28,10 @@ exports.registerUser = async (req, res, next) => {
   } catch (e) {
     res.status(404).json({
       success: false,
-      errorMessage: ` ${e.message.split(' ').slice(4,12).join(' ')}`,
-    
+      errorMessage: ` ${e.message.split(" ").slice(4, 12).join(" ")}`,
     });
   }
 };
-
-
-
 
 // LOGIN User
 
@@ -180,20 +176,35 @@ exports.updatePassword = async (req, res, next) => {
 // Update user profile
 
 exports.updateUser = async (req, res, next) => {
-  // we will add cloudinary later
-
-  const user = await User.findOne({ _id: req.user._id });
+  let user = await User.findById({ _id: req.user._id });
   if (!user) {
     return next(new ErrorHandler("User not found", 400));
   }
-  user.email = req.body.email;
-  user.name = req.body.name;
-  await user.save();
+  const newuserData = {
+    name: req.body.name,
+    email: req.body.email
+  };
 
-  res.status(200).json({
+  if (req.body.avatar !== "") {
+    const user = await User.findById({ _id: req.user._id });
+    const inputId = user.avatar.public_id;
+
+    await cloudinary.uploader.destroy(inputId);
+    const mycloud = await cloudinary.uploader.upload(req.body.avatar, {
+      folder: "avatars",
+      width: 150,
+      crop: "scale",
+    });
+
+    newuserData.avatar = {
+      public_id: mycloud.public_id,
+      url: mycloud.secure_url,
+    };
+  }
+  user = await User.updateOne({ _id: req.user._id }, { $set: newuserData });
+
+   return  res.status(200).json({
     success: true,
-   
-    
   });
 };
 
@@ -258,6 +269,5 @@ exports.deleteUser = async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "User deleted successfully",
-   
   });
 };
