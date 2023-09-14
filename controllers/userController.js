@@ -159,13 +159,18 @@ exports.getUserDetails = async (req, res, next) => {
 //  Change User password
 exports.updatePassword = async (req, res, next) => {
   const user = await User.findById(req.user._id).select("+password");
+  if (req.body.newPassword.length < 8 || req.body.confirmPassword.length < 8) {
+    return next(
+      new ErrorHandler("Password must be more than 8 characters", 400)
+    );
+  }
   const ispasswordMatched = await user.comparePassword(req.body.oldPassword);
 
   if (!ispasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect", 400));
   }
   if (req.body.newPassword !== req.body.confirmPassword) {
-    return next(new ErrorHandler("Passwod does not match", 400));
+    return next(new ErrorHandler("Passwords does not match", 400));
   }
 
   user.password = req.body.newPassword;
@@ -176,36 +181,47 @@ exports.updatePassword = async (req, res, next) => {
 // Update user profile
 
 exports.updateUser = async (req, res, next) => {
-  let user = await User.findById({ _id: req.user._id });
-  if (!user) {
-    return next(new ErrorHandler("User not found", 400));
-  }
-  const newuserData = {
-    name: req.body.name,
-    email: req.body.email
-  };
-
-  if (req.body.avatar !== "") {
-    const user = await User.findById({ _id: req.user._id });
-    const inputId = user.avatar.public_id;
-
-    await cloudinary.uploader.destroy(inputId);
-    const mycloud = await cloudinary.uploader.upload(req.body.avatar, {
-      folder: "avatars",
-      width: 150,
-      crop: "scale",
-    });
-
-    newuserData.avatar = {
-      public_id: mycloud.public_id,
-      url: mycloud.secure_url,
+  try {
+    let user = await User.findById({ _id: req.user._id });
+    if (!user) {
+      return next(new ErrorHandler("User not found", 400));
+    }
+    const newuserData = {
+      name: req.body.name,
+      email: req.body.email,
     };
-  }
-  user = await User.updateOne({ _id: req.user._id }, { $set: newuserData });
 
-   return  res.status(200).json({
-    success: true,
-  });
+    if (req.body.avatar !== "") {
+      const user = await User.findById({ _id: req.user._id });
+      const inputId = user.avatar.public_id;
+
+      await cloudinary.uploader.destroy(inputId);
+      const mycloud = await cloudinary.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+        crop: "scale",
+      });
+
+      newuserData.avatar = {
+        public_id: mycloud.public_id,
+        url: mycloud.secure_url,
+      };
+    }
+    user = await User.updateOne(
+      { _id: req.user._id },
+      { $set: newuserData },
+      { runValidators: true, validateBeforeSave: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (e) {
+    res.status(404).json({
+      success: false,
+      errorMessage: ` ${e.message.slice(25)}`,
+    });
+  }
 };
 
 // Get all users (admin want to see)
