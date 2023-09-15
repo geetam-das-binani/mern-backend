@@ -3,6 +3,7 @@ const User = require("../model/userSchema");
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
 const cloudinary = require("cloudinary");
+const crypto = require("crypto");
 
 // Register user
 exports.registerUser = async (req, res, next) => {
@@ -86,14 +87,12 @@ exports.forgotPassword = async (req, res, next) => {
   const resetToken = user.getPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetPasswordUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/password/${resetToken}`;
-
+  const resetPasswordUrl = `${process.env.FRONTEND_URL}/api/v1/password/reset/${resetToken}`;
   const message = ` Your Password reset token is :- \n\n  ${resetPasswordUrl}
   \n 
   if you have not requested this email then , please ignore it.
   `;
+
   try {
     await sendEmail({
       email: user.email,
