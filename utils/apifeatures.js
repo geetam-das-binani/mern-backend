@@ -15,13 +15,13 @@ class ApiFeatures {
       : {};
 
     this.query = this.query.find({ ...keyword });
-    // here this means our class 
+   
     return this;
   }
   filter() {
     const queryCopy = { ...this.queryStr };
-          //  console.log(queryCopy);
-    //  Remove some fields for cateogry
+         
+   
     const removeFields = ["keyword", "page", "limit"];
     removeFields.forEach((key) => delete queryCopy[key]);
 

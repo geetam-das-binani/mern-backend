@@ -28,18 +28,18 @@ exports.getAllProducts = async (req, res, next) => {
   const productCounts = await Product.countDocuments();
   const apiFeature = new ApiFeatures(Product.find(), req.query)
     .search()
-    .filter()
-  
-    
-  let products = await apiFeature.query;
-  let filteredProductsCount = products.length;
-  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+    .filter();
+
+  const fProducts = await apiFeature.query;
+  let filteredProductsCount = fProducts.length;
+
+  let apiFeatures = new ApiFeatures(Product.find(), req.query)
     .search()
     .filter()
     .pagination(resultsPerPage);
-  products = await apiFeatures.query;
+  let products = await apiFeatures.query;
 
-  if (!products) { 
+  if (!products) {
     return next(new ErrorHandler("Products haven't found", 404));
   }
   res.status(200).json({
