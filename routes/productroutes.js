@@ -12,6 +12,7 @@ const {
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 
+
 router.get("/products", getAllProducts);
 router.post(
   "/admin/product/new",

@@ -12,6 +12,11 @@ const cloudinary = require("cloudinary").v2;
 
 const fileUpload=require('express-fileupload')
 const app = express();  
+
+
+
+
+
 app.use('*',cors({ 
   origin:true, 
   credentials:true
@@ -43,6 +48,8 @@ cloudinary.config({
 app.use("/", productRoute);
 app.use("/", userRoute);
 app.use("/", orderRoute);
+
+
 
 // middleware for error
 app.use(errorMiddleware);
