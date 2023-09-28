@@ -6,6 +6,7 @@ const connect = require("./connection/databaseConnect");
 const productRoute = require("./routes/productroutes");
 const userRoute = require("./routes/userRoutes");
 const orderRoute = require("./routes/orderRoutes");
+const paymentRoute =require('./routes/paymentRoutes')
 const cors = require("cors");
 const errorMiddleware = require("./middleware/error");
 const cloudinary = require("cloudinary").v2;
@@ -39,6 +40,7 @@ process.on("uncaughtException", (err) => {
 });
 
 connect(process.env.NAME, process.env.PASSWORD);
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -48,6 +50,7 @@ cloudinary.config({
 app.use("/", productRoute);
 app.use("/", userRoute);
 app.use("/", orderRoute);
+app.use('/',paymentRoute)
 
 
 

@@ -26,14 +26,14 @@ exports.newOrder = async (req, res, next) => {
         totalPrice,
         id:paymentInfo.id,
         status:paymentInfo.status
-      },
+      }, 
 
       user: req.user._id,
     });
     res.status(201).json({
       success: true,
       order,
-    });
+    }); 
   } catch (e) {
     res.status(500).json({
       success: false,
