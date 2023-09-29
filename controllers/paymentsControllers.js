@@ -5,7 +5,7 @@ const stripe = require("stripe");
 
 
 exports.processPayments = async (req, res, next) => {
-  console.log(process.env.STRIPE_SECRET_KEY);
+
   try {
     const myPayment = await stripe(process.env.STRIPE_SECRET_KEY).paymentIntents.create({
       amount: req.body.amount,
