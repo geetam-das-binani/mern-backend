@@ -32,12 +32,12 @@ exports.newOrder = async (req, res, next) => {
     });
     res.status(201).json({
       success: true,
-      order,
-    }); 
+      order,  
+    });   
   } catch (e) {
     res.status(500).json({
       success: false,
-      message: e.message,
+      errorMessage: e.message,
     });
   }
 };
@@ -85,7 +85,7 @@ exports.getAllOrders = async (req, res, next) => {
   } catch (e) {
     res.status(404).json({
       success: false,
-      message: "No orders found",
+      errorMessage: "No orders found",
     });
   }
 }; 
