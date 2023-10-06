@@ -9,6 +9,7 @@ const {
   createProductReview,
   deleteReview,
   getProductReviews,
+  getAdminAllProducts,
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 
@@ -20,6 +21,8 @@ router.post(
   authorizeRoles("admin"),
   createProduct
 );
+router.get('/admin/products',isAuthenticatedUser,authorizeRoles('admin'),getAdminAllProducts)
+
 router.post(
   "/admin/product/update/:id",
   isAuthenticatedUser,

@@ -6,7 +6,7 @@ const ApiFeatures = require("../utils/apifeatures");
 exports.createProduct = async (req, res, next) => {
   try {
     req.body.user = req.user._id;
-    console.log(req.user._id);
+
     const product = await Product.create(req.body);
 
     res.status(200).json({
@@ -24,31 +24,54 @@ exports.createProduct = async (req, res, next) => {
 // get all product
 
 exports.getAllProducts = async (req, res, next) => {
-  const resultsPerPage = 8;
-  const productCounts = await Product.countDocuments();
-  const apiFeature = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter();
+  try {
+    const resultsPerPage = 8;
+    const productCounts = await Product.countDocuments();
+    const apiFeature = new ApiFeatures(Product.find(), req.query)
+      .search()
+      .filter();
 
-  const fProducts = await apiFeature.query;
-  let filteredProductsCount = fProducts.length;
+    const fProducts = await apiFeature.query;
+    let filteredProductsCount = fProducts.length;
 
-  let apiFeatures = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter()
-    .pagination(resultsPerPage);
-  let products = await apiFeatures.query;
+    let apiFeatures = new ApiFeatures(Product.find(), req.query)
+      .search()
+      .filter()
+      .pagination(resultsPerPage);
+    let products = await apiFeatures.query;
 
-  if (!products) {
-    return next(new ErrorHandler("Products haven't found", 404));
+    if (!products) {
+      return next(new ErrorHandler("Products haven't found", 404));
+    }
+    res.status(200).json({
+      success: true,
+      products,
+      productCounts,
+      resultsPerPage,
+      filteredProductsCount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errorMessage: error.messasge,
+    });
   }
-  res.status(200).json({
-    success: true,
-    products,
-    productCounts,
-    resultsPerPage,
-    filteredProductsCount,
-  });
+};
+
+// get all products Admin
+exports.getAdminAllProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errorMessage: error.messasge,
+    });
+  }
 };
 
 // get product details
