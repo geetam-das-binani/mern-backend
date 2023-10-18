@@ -4,7 +4,7 @@ const ApiFeatures = require("../utils/apifeatures");
 const cloudinary = require("cloudinary");
 // create product --Admin
 exports.createProduct = async (req, res, next) => {
- try {
+  try {
     let images = [];
 
     if (typeof req.body.images === "string") {
@@ -13,20 +13,19 @@ exports.createProduct = async (req, res, next) => {
       images = req.body.images;
     }
     const imagesLinks = [];
-  
+
     for (let i = 0; i < images.length; i++) {
       const result = await cloudinary.uploader.upload(images[i], {
         folder: "products",
       });
-  
+
       imagesLinks.push({
         public_id: result.public_id,
         url: result.secure_url,
       });
-  
     }
-  
-    req.body.images=imagesLinks
+
+    req.body.images = imagesLinks;
     req.body.user = req.user._id;
 
     const product = await Product.create(req.body);
@@ -116,6 +115,37 @@ exports.updateProduct = async (req, res, next) => {
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
   }
+
+  // images start here
+  let images = [];
+
+  if (typeof req.body.images === "string" && req.body.images !== "") {
+    images.push(req.body.images);
+  } else {
+    images = req.body.images;
+  }
+
+  if (images !== undefined) {
+    // delete image from cloudinary
+    for (let i = 0; i < product.images.length; i++) {
+      await cloudinary.uploader.destroy(product.images[i].public_id);
+    }
+
+    const imagesLinks = [];
+    // add images to cloudinary
+    for (let i = 0; i < images.length; i++) {
+      const result = await cloudinary.uploader.upload(images[i], {
+        folder: "products",
+      });
+
+      imagesLinks.push({
+        public_id: result.public_id,
+        url: result.secure_url,
+      });
+    }
+    req.body.images = imagesLinks;
+  }
+
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -135,6 +165,11 @@ exports.deleteProduct = async (req, res, next) => {
       new ErrorHandler("Product not deleted as it is not found", 404)
     );
   }
+  // deleting images from cloudinary
+  for (let i = 0; i < product.images.length; i++) {
+    await cloudinary.uploader.destroy(product.images[i].public_id);
+  }
+
   product = await Product.deleteOne({ _id: req.params.id });
   res.status(200).json({
     success: true,
