@@ -11,11 +11,7 @@ exports.registerUser = async (req, res, next) => {
     return next(new ErrorHandler("Avatar is required", 400));
   }
   const { name, email, password, phoneNumber } = req.body;
-  if (
-    [name, email, password, phoneNumber].some((field) => field?.trim() === "")
-  ) {
-    return next(new ErrorHandler("All fields are required", 400));
-  }
+ 
   const isExisteduser = await User.findOne({ $or: [{ email }, { name }] });
   if (isExisteduser) {
     return next(new ErrorHandler("User already exists", 400));
@@ -57,11 +53,14 @@ exports.registerUser = async (req, res, next) => {
 
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
+ 
 
-  //  checking if user has given password and email both
-  if (!email || !password) {
-    return next(new ErrorHandler("Please Enter email and password", 400));
+  //  checking if user has given password 
+  if (!password) {
+    return next(new ErrorHandler("Password is required", 400));
   }
+
+
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return next(new ErrorHandler("Invalid email or password", 401));

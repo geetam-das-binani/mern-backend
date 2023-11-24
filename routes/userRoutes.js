@@ -17,13 +17,14 @@ const {
   verifyOtp,
 } = require("../controllers/userController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
-const validate = require("../middleware/validate.js");
-const registerSchema = require("../validators/auth-validator.js");
+const {validateRegister,validateLogin} = require("../middleware/validate.js");
+const {registerSchema }= require("../validators/register-validator.js");
+const {loginSchema }= require("../validators/login-validators.js");
 
 const router = express.Router();
 
-router.post("/register", validate(registerSchema), registerUser);
-router.post("/login", loginUser);
+router.post("/register", validateRegister(registerSchema), registerUser);
+router.post("/login",validateLogin(loginSchema), loginUser);
 router.post("/sendotp", sendOtp);
 router.post("/verifyOtp", verifyOtp);
 router.post("/password/forgot", forgotPassword);

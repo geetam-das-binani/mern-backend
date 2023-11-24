@@ -3,7 +3,7 @@ const z = require("zod");
 // creating an object schema
 const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W\s])(?=.{8,})/;
 
-const registerSchema = z.object({
+exports.registerSchema = z.object({
   name: z
     .string({ required_error: "Name is required" })
     .trim()
@@ -15,8 +15,8 @@ const registerSchema = z.object({
     .trim()
     .email({ message: "Please enter a valid email" })
     .min(10, { message: "Email must be atleast 10 characters" })
-    .max(50, { message: "Email must not be more than 50 characters" }),
-
+    .max(50, { message: "Email must not be more than 50 characters" })
+   ,
   password: z
     .string({ required_error: "Password is required" })
     .min(8, { message: "Password must be atleast 8 characters" })
@@ -32,4 +32,5 @@ const registerSchema = z.object({
     .max(20, { message: "Phone must not be more than 20 characters" }),
 });
 
-module.exports = registerSchema;
+
+

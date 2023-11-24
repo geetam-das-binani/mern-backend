@@ -1,6 +1,6 @@
 const ErrorHandler = require("../utils/errorhandler");
 
-const validate = (registerSchema) => async (req, res, next) => {
+exports.validateRegister = (registerSchema) => async (req, res, next) => {
   try {
     const parseBody = await registerSchema.parseAsync(req.body);
 
@@ -11,6 +11,14 @@ const validate = (registerSchema) => async (req, res, next) => {
     next(new ErrorHandler(message, 403));
   }
 };
+exports.validateLogin = (loginSchema) => async (req, res, next) => {
+  try {
+    const parseBody = await loginSchema.parseAsync(req.body);
 
-module.exports = validate;
- 
+    req.body = {...parseBody,password:req.body.password}
+    next();
+  } catch (err) {
+    const message = err.errors[0].message;
+    next(new ErrorHandler(message, 403));
+  }
+};
