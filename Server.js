@@ -1,36 +1,36 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
+
+dotenv.config({ path: path.join(__dirname, "./config/config.env") });
+
 const cookieParser = require("cookie-parser");
 const connect = require("./connection/databaseConnect");
 const productRoute = require("./routes/productroutes");
 const userRoute = require("./routes/userRoutes");
 const orderRoute = require("./routes/orderRoutes");
-const paymentRoute =require('./routes/paymentRoutes')
+const paymentRoute = require("./routes/paymentRoutes");
 const cors = require("cors");
 const errorMiddleware = require("./middleware/error");
 const cloudinary = require("cloudinary").v2;
 
-const fileUpload=require('express-fileupload')
-const app = express();  
+const fileUpload = require("express-fileupload");
+const app = express();
 
+app.use(
+  "*",
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
-
-
-
-app.use('*',cors({ 
-  origin:true, 
-  credentials:true
-}))    
-  
-app.use(fileUpload())    
+app.use(fileUpload());
 app.use(express.json());
 app.use(cookieParser());
 
- 
 app.use(express.urlencoded({ extended: true }));
 
-dotenv.config({ path: path.join(__dirname, "./config/config.env") });
 // handling uncaught ecxeption
 process.on("uncaughtException", (err) => {
   console.log(`Error being ${err.message}`);
@@ -50,9 +50,7 @@ cloudinary.config({
 app.use("/", productRoute);
 app.use("/", userRoute);
 app.use("/", orderRoute);
-app.use('/',paymentRoute)
-
-
+app.use("/", paymentRoute);
 
 // middleware for error
 app.use(errorMiddleware);

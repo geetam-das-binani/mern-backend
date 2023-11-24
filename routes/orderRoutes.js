@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const {
-  newOrder,
+  newOrder, 
   getSingleOrderDetails,
   myOrders,
   getAllOrders,

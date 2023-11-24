@@ -181,11 +181,12 @@ exports.deleteProduct = async (req, res, next) => {
 exports.createProductReview = async (req, res, next) => {
   try {
     const { rating, comment, productId } = req.body;
-
+      
     const review = {
       user: req.user._id,
       name: req.user.name,
       rating: Number(rating),
+      avatar:req.user.avatar.url,
       comment,
     };
     const product = await Product.findById(productId);
@@ -231,28 +232,86 @@ exports.getProductReviews = async (req, res, next) => {
   } catch (e) {
     res.status(404).json({
       success: false,
-      message: "Product not found",
+      errorMessage: "Product not found",
     });
   }
 };
 
-// Delete Review
+// Delete Review Admin
 exports.deleteReview = async (req, res, next) => {
-  const product = await Product.findById(req.query.productId);
-  if (!product) {
-    return next(new ErrorHandler("Products haven't found", 404));
-  }
-  const review = product.reviews.filter(
-    (rev) => rev._id.toString() !== req.query.Id
-  );
-  let avg = review.reduce((a, b) => a + b.rating, 0);
-  product.reviews = review;
-  product.ratings = avg / review.length;
-  product.numOfReviews = review.length;
+  try {
+    const product = await Product.findById(req.query.productId);
 
-  await product.save({ validateBeforeSave: false });
-  res.status(200).json({
-    success: true,
-    message: "Review deleted",
-  });
+    if (!product) {
+      return next(
+        new ErrorHandler("Review haven't found.No Such Product", 404)
+      );
+    }
+
+    const review = product.reviews.filter(
+      (rev) => rev._id.toString() !== req.query.Id.toString()
+    );
+
+    let avg = review.reduce((a, b) => a + b.rating, 0);
+    product.reviews = review;
+
+    if (review.length === 0) {
+      product.ratings = 0;
+    } else {
+      product.ratings = avg / review.length;
+    }
+
+    product.numOfReviews = review.length;
+
+    await product.save({ validateBeforeSave: false });
+    res.status(200).json({
+      success: true,
+      message: "Review Deleted Successfully",
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      errorMessage: "Unable to Delete Review",
+    });
+  }
+};
+
+// delete  review user
+
+exports.deleteUserReview = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.query.productId);
+
+    if (!product) {
+      return next(
+        new ErrorHandler("Review haven't found.No Such Product", 404)
+      );
+    }
+
+    const review = product.reviews.filter(
+      (rev) => rev.user.toString() !== req.user._id.toString()
+    );
+
+    let avg = review.reduce((a, b) => a + b.rating, 0);
+    product.reviews = review;
+
+    if (review.length === 0) {
+      product.ratings = 0;
+    } else {
+      product.ratings = avg / review.length;
+    }
+
+    product.numOfReviews = review.length;
+
+    await product.save({ validateBeforeSave: false });
+    res.status(200).json({
+      success: true,
+      message: "Review Deleted Successfully",
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      errorMessage: "Unable to Delete Review",
+    });
+  }
 };

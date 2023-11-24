@@ -24,16 +24,16 @@ exports.newOrder = async (req, res, next) => {
         taxPrice,
         shippingPrice,
         totalPrice,
-        id:paymentInfo.id,
-        status:paymentInfo.status
-      }, 
+        id: paymentInfo.id,
+        status: paymentInfo.status,
+      },
 
       user: req.user._id,
     });
     res.status(201).json({
       success: true,
-      order,  
-    });   
+      order,
+    });
   } catch (e) {
     res.status(500).json({
       success: false,
@@ -42,7 +42,7 @@ exports.newOrder = async (req, res, next) => {
   }
 };
 
-// get single order details ---admin
+// get single order details admin user
 exports.getSingleOrderDetails = async (req, res, next) => {
   const order = await Order.findById(req.params.id).populate(
     "user",
@@ -58,8 +58,8 @@ exports.getSingleOrderDetails = async (req, res, next) => {
   });
 };
 
-// get logged in user order
-exports.myOrders = async (req, res, next) => {
+// get logged in user orders
+exports.myOrders = async (req, res) => {
   const orders = await Order.find({ user: req.user._id });
 
   res.status(200).json({
@@ -88,11 +88,12 @@ exports.getAllOrders = async (req, res, next) => {
       errorMessage: "No orders found",
     });
   }
-}; 
+};
 
 // update order status ---admin
 
 exports.updateOrder = async (req, res, next) => {
+  
   const order = await Order.findById(req.params.id);
   if (!order) {
     return next(new ErrorHandler("Order not found with this id", 404));
@@ -102,9 +103,12 @@ exports.updateOrder = async (req, res, next) => {
       new ErrorHandler("You have already delievered this order", 404)
     );
   }
-  order.orderItems.forEach(
-    async (order) => await updateStock(order.product, order.quantity)
-  );
+  if (req.body.status === "Shipped") {
+    order.orderItems.forEach(
+      async (order) => await updateStock(order.product, order.quantity)
+    );
+  }
+
   order.paymentInfo.orderStatus = req.body.status;
   if (req.body.status === "Delivered") {
     order.paymentInfo.deliveredAt = Date.now();
@@ -122,7 +126,7 @@ async function updateStock(id, quantity) {
   product.Stock = product.Stock - quantity;
   await product.save({ validateBeforeSave: false });
 }
-
+ 
 // delete order ---admin
 
 exports.deleteOrder = async (req, res, next) => {
@@ -136,3 +140,4 @@ exports.deleteOrder = async (req, res, next) => {
     success: true,
   });
 };
+

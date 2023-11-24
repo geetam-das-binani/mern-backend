@@ -7,19 +7,38 @@ const crypto = require("crypto");
 
 // Register user
 exports.registerUser = async (req, res, next) => {
+  if (req.body.avatar === "") {
+    return next(new ErrorHandler("Avatar is required", 400));
+  }
+  const { name, email, password, phoneNumber } = req.body;
+  if (
+    [name, email, password, phoneNumber].some((field) => field?.trim() === "")
+  ) {
+    return next(new ErrorHandler("All fields are required", 400));
+  }
+  const isExisteduser = await User.findOne({ $or: [{ email }, { name }] });
+  if (isExisteduser) {
+    return next(new ErrorHandler("User already exists", 400));
+  }
   const mycloud = await cloudinary.uploader.upload(req.body.avatar, {
     folder: "avatars",
     width: 150,
     crop: "scale",
   });
-
-  const { name, email, password } = req.body;
-
+  if (!mycloud) {
+    return next(
+      new ErrorHandler(
+        "Something went wrong while uploading.Please Try Again.",
+        400
+      )
+    );
+  }
   try {
     const user = await User.create({
       name,
       email,
       password,
+      phoneNumber,
       avatar: {
         public_id: mycloud.public_id,
         url: mycloud.secure_url,
@@ -53,6 +72,42 @@ exports.loginUser = async (req, res, next) => {
   if (!ispasswordMatched) {
     return next(new ErrorHandler("Invalid email or password", 401));
   }
+  sendToken(user, 200, res);
+};
+
+// login using otp
+
+exports.sendOtp = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ phoneNumber: req.body.phoneNumber });
+    if (!user) {
+      return next(new ErrorHandler("Phone Number does not exist", 401));
+    }
+
+    await user.saveOtp();
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (e) {
+    console.log(e);
+    return next(new ErrorHandler(e.message, 500));
+  }
+};
+
+exports.verifyOtp = async (req, res, next) => {
+  const user = await User.findOne({
+    resetOtpExpire: { $gt: Date.now() },
+    otp: req.body.otp,
+  });
+  if (!user) {
+    return next(new ErrorHandler("Invalid Otp", 401));
+  }
+
+  user.otp = undefined;
+  user.resetOtpExpire = undefined;
+  await user.save();
   sendToken(user, 200, res);
 };
 
@@ -235,7 +290,7 @@ exports.getAllUsers = async (req, res, next) => {
   } catch (e) {
     res.status(404).json({
       success: false,
-      message: "No Users present for now",
+      errorMessage: "No Users present for now",
     });
   }
 };
@@ -279,6 +334,9 @@ exports.deleteUser = async (req, res, next) => {
       new ErrorHandler(`User not found with id-${req.params.id}`, 400)
     );
   }
+  const inputId = user.avatar.public_id;
+
+  await cloudinary.uploader.destroy(inputId);
 
   user = await User.deleteOne({ _id: req.params.id });
   res.status(200).json({
@@ -286,5 +344,3 @@ exports.deleteUser = async (req, res, next) => {
     message: "User deleted successfully",
   });
 };
-
-

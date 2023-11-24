@@ -13,13 +13,19 @@ const {
   getSingleUser,
   updateUserRole,
   deleteUser,
+  sendOtp,
+  verifyOtp,
 } = require("../controllers/userController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
+const validate = require("../middleware/validate.js");
+const registerSchema = require("../validators/auth-validator.js");
 
 const router = express.Router();
 
-router.post("/register",registerUser);
+router.post("/register", validate(registerSchema), registerUser);
 router.post("/login", loginUser);
+router.post("/sendotp", sendOtp);
+router.post("/verifyOtp", verifyOtp);
 router.post("/password/forgot", forgotPassword);
 router.get("/logout", logOut);
 router.post("/api/v1/password/reset/:token", resetPassword);
