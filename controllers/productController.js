@@ -59,6 +59,7 @@ exports.getAllProducts = async (req, res, next) => {
       .search()
       .filter()
       .pagination(resultsPerPage);
+
     let products = await apiFeatures.query;
 
     if (!products) {
@@ -181,12 +182,12 @@ exports.deleteProduct = async (req, res, next) => {
 exports.createProductReview = async (req, res, next) => {
   try {
     const { rating, comment, productId } = req.body;
-      
+
     const review = {
       user: req.user._id,
       name: req.user.name,
       rating: Number(rating),
-      avatar:req.user.avatar.url,
+      avatar: req.user.avatar.url,
       comment,
     };
     const product = await Product.findById(productId);
@@ -244,13 +245,14 @@ exports.deleteReview = async (req, res, next) => {
 
     if (!product) {
       return next(
-        new ErrorHandler("Review haven't found.No Such Product", 404)
+        new ErrorHandler("Review haven't found.No Such Product", 400)
       );
     }
 
     const review = product.reviews.filter(
       (rev) => rev._id.toString() !== req.query.Id.toString()
     );
+  
 
     let avg = review.reduce((a, b) => a + b.rating, 0);
     product.reviews = review;
@@ -284,14 +286,16 @@ exports.deleteUserReview = async (req, res, next) => {
 
     if (!product) {
       return next(
-        new ErrorHandler("Review haven't found.No Such Product", 404)
+        new ErrorHandler("Review haven't found.No Such Product", 400)
       );
     }
 
     const review = product.reviews.filter(
       (rev) => rev.user.toString() !== req.user._id.toString()
     );
-
+    
+    if (review.length === 0) return next(new ErrorHandler("No Review Found", 400));
+    
     let avg = review.reduce((a, b) => a + b.rating, 0);
     product.reviews = review;
 
@@ -309,7 +313,7 @@ exports.deleteUserReview = async (req, res, next) => {
       message: "Review Deleted Successfully",
     });
   } catch (error) {
-    res.status(404).json({
+    res.status(400).json({
       success: false,
       errorMessage: "Unable to Delete Review",
     });
