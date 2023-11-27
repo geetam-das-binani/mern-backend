@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 dotenv.config({ path: path.join(__dirname, "./config/config.env") });
-
+const PORT=process.env.PORT || 8000
 const cookieParser = require("cookie-parser");
 const connect = require("./connection/databaseConnect");
 const productRoute = require("./routes/productroutes");
@@ -16,6 +16,7 @@ const cloudinary = require("cloudinary").v2;
 
 const fileUpload = require("express-fileupload");
 const app = express();
+let server;
 
 app.use(
   "*",
@@ -39,8 +40,6 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-connect(process.env.NAME, process.env.PASSWORD);
-
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -55,9 +54,14 @@ app.use("/", paymentRoute);
 // middleware for error
 app.use(errorMiddleware);
 
-const server = app.listen(process.env.PORT, () =>
-  console.log(`Server started on port ${process.env.PORT}`)
-);
+connect(process.env.NAME, process.env.PASSWORD)
+  .then(() => {
+    console.log("Connected to Database Successfully");
+    server = app.listen(PORT, () => {
+      console.log(`Server started on port ${PORT}`);
+    });
+  })
+  .catch((e) => console.log(e.message));
 
 // unhandled Promise Rejection
 process.on("unhandledRejection", (err) => {

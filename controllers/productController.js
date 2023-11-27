@@ -45,6 +45,9 @@ exports.createProduct = async (req, res, next) => {
 // get all product
 
 exports.getAllProducts = async (req, res, next) => {
+  // to see whether product is in stock or not
+  const checked = req.query.checked;
+
   try {
     const resultsPerPage = 8;
     const productCounts = await Product.countDocuments();
@@ -65,6 +68,10 @@ exports.getAllProducts = async (req, res, next) => {
     if (!products) {
       return next(new ErrorHandler("Products haven't found", 404));
     }
+    if (checked === "true" && typeof checked === "string") {
+      products = products.filter((data) => data.Stock > 0);
+    }
+
     res.status(200).json({
       success: true,
       products,
@@ -252,7 +259,6 @@ exports.deleteReview = async (req, res, next) => {
     const review = product.reviews.filter(
       (rev) => rev._id.toString() !== req.query.Id.toString()
     );
-  
 
     let avg = review.reduce((a, b) => a + b.rating, 0);
     product.reviews = review;
@@ -293,9 +299,10 @@ exports.deleteUserReview = async (req, res, next) => {
     const review = product.reviews.filter(
       (rev) => rev.user.toString() !== req.user._id.toString()
     );
-    
-    if (review.length === 0) return next(new ErrorHandler("No Review Found", 400));
-    
+
+    if (review.length === 0)
+      return next(new ErrorHandler("No Review Found", 400));
+
     let avg = review.reduce((a, b) => a + b.rating, 0);
     product.reviews = review;
 
