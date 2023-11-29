@@ -54,7 +54,7 @@ app.use("/api/v1", paymentRoute);
 // middleware for error
 app.use(errorMiddleware);
 
-connect(process.env.NAME, process.env.PASSWORD)
+connect(process.env.DATABASE_NAME, process.env.DATABASE_PASSWORD)
   .then(() => {
     console.log("Connected to Database Successfully");
     server = app.listen(PORT, () => {
