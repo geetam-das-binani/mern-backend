@@ -29,7 +29,7 @@ router.post("/sendotp", sendOtp);
 router.post("/verifyOtp", verifyOtp);
 router.post("/password/forgot", forgotPassword);
 router.get("/logout", logOut);
-router.post("/api/v1/password/reset/:token", resetPassword);
+router.post("/password/reset/:token", resetPassword);
 router.get("/me", isAuthenticatedUser, getUserDetails);
 router.post("/password/update", isAuthenticatedUser, updatePassword);
 router.post("/me/update", isAuthenticatedUser, updateUser);

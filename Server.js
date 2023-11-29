@@ -46,10 +46,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-app.use("/", productRoute);
-app.use("/", userRoute);
-app.use("/", orderRoute);
-app.use("/", paymentRoute);
+app.use("/api/v1", productRoute);
+app.use("/api/v1", userRoute);
+app.use("/api/v1", orderRoute);
+app.use("/api/v1", paymentRoute);
 
 // middleware for error
 app.use(errorMiddleware);

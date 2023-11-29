@@ -6,12 +6,13 @@ const cloudinary = require("cloudinary");
 const crypto = require("crypto");
 
 // Register user
+
 exports.registerUser = async (req, res, next) => {
   if (req.body.avatar === "") {
     return next(new ErrorHandler("Avatar is required", 400));
   }
   const { name, email, password, phoneNumber } = req.body;
- 
+
   const isExisteduser = await User.findOne({ $or: [{ email }, { name }] });
   if (isExisteduser) {
     return next(new ErrorHandler("User already exists", 400));
@@ -53,13 +54,11 @@ exports.registerUser = async (req, res, next) => {
 
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
- 
 
-  //  checking if user has given password 
+  //  checking if user has given password
   if (!password) {
     return next(new ErrorHandler("Password is required", 400));
   }
-
 
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
@@ -211,17 +210,29 @@ exports.getUserDetails = async (req, res, next) => {
 };
 //  Change User password
 exports.updatePassword = async (req, res, next) => {
+  const passwordRegex =
+    /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W\s])(?=.{8,})/;
   const user = await User.findById(req.user._id).select("+password");
-  if (req.body.newPassword.length < 8 || req.body.confirmPassword.length < 8) {
-    return next(
-      new ErrorHandler("Password must be more than 8 characters", 400)
-    );
-  }
+
   const ispasswordMatched = await user.comparePassword(req.body.oldPassword);
 
   if (!ispasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect", 400));
   }
+  if (req.body.newPassword.length < 8 || req.body.confirmPassword.length < 8) {
+    return next(
+      new ErrorHandler("Password must be more than 8 characters", 400)
+    );
+  }
+  if (!passwordRegex.test(req.body.newPassword)) {
+    return next(
+      new ErrorHandler(
+        `Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character or whitespace, and be at least 8 characters long.`,
+        400
+      )
+    );
+  }
+
   if (req.body.newPassword !== req.body.confirmPassword) {
     return next(new ErrorHandler("Passwords does not match", 400));
   }
