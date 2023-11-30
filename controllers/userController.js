@@ -116,6 +116,8 @@ exports.logOut = async (req, res, next) => {
     res.cookie("token", null, {
       expires: new Date(Date.now()),
       httpOnly: true,
+      secure: true, // Ensure it matches the original cookie configuration
+      sameSite: 'None', // If applicable for cross-origin requests
     });
     res.status(200).json({
       success: true,
