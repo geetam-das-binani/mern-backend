@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 dotenv.config({ path: path.join(__dirname, "./config/config.env") });
-const PORT=process.env.PORT || 8000
+const PORT = process.env.PORT || 8000;
 const cookieParser = require("cookie-parser");
 const connect = require("./connection/databaseConnect");
 const productRoute = require("./routes/productroutes");
@@ -54,6 +54,10 @@ app.use("/api/v1", paymentRoute);
 // middleware for error
 app.use(errorMiddleware);
 
+app.use(express.static(path.join(__dirname, "./dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./dist/index.html"));
+});
 connect(process.env.DATABASE_NAME, process.env.DATABASE_PASSWORD)
   .then(() => {
     console.log("Connected to Database Successfully");
