@@ -206,13 +206,8 @@ exports.createProductReview = async (req, res, next) => {
     if (isReviewed) {
       product.reviews.forEach(async (rev) => {
         if (rev.user.toString() === req.user._id.toString()) {
-          const avatarUrl = await cloudinary.uploader.upload(
-            req.user.avatar.url,
-            {
-              folder: "products",
-            }
-          );
-          rev.avatar = avatarUrl.secure_url;
+          
+          rev.avatar =req.user.avatar.url;
 
           (rev.comment = comment), (rev.rating = rating);
         }
