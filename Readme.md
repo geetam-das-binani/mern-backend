@@ -1,8 +1,8 @@
-# MERN E-COMMERCE 
+# MERN E-COMMERCE
 
 Hi! My name is **Geetam Das Binani**, I have created this ecommerce app using MERN Stack.
 
-# Install Dependencies
+## Install Dependencies
 
 **For Backend** - npm i
 
@@ -44,8 +44,6 @@ FRONTEND_URL
 ACCOUNT_SID
 
 TWILO_AUTH_KEY
-
-_fill each filed with your info respectively_
 
 ## Author
 

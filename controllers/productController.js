@@ -2,6 +2,7 @@ const Product = require("../model/productSchema");
 const ErrorHandler = require("../utils/errorhandler");
 const ApiFeatures = require("../utils/apifeatures");
 const cloudinary = require("cloudinary");
+
 // create product --Admin
 exports.createProduct = async (req, res, next) => {
   try {
@@ -54,7 +55,7 @@ exports.getAllProducts = async (req, res, next) => {
     const apiFeature = new ApiFeatures(Product.find(), req.query)
       .search()
       .filter();
- 
+
     const fProducts = await apiFeature.query;
     let filteredProductsCount = fProducts.length;
 
@@ -63,15 +64,14 @@ exports.getAllProducts = async (req, res, next) => {
       .filter()
       .pagination(resultsPerPage);
 
-    let products = await apiFeatures.query; 
-    
+    let products = await apiFeatures.query;
+
     if (!products) {
       return next(new ErrorHandler("Products haven't found", 404));
     }
     if (checked === "true" && typeof checked === "string") {
       products = products.filter((data) => data.Stock > 0);
     }
-    
 
     res.status(200).json({
       success: true,
@@ -198,15 +198,23 @@ exports.createProductReview = async (req, res, next) => {
       avatar: req.user.avatar.url,
       comment,
     };
-    const product = await Product.findById(productId);
+    let product = await Product.findById(productId);
 
     const isReviewed = product.reviews.find(
       (rev) => rev.user.toString() === req.user._id.toString()
     );
     if (isReviewed) {
-      product.reviews.forEach((rev) => {
+      product.reviews.forEach(async (rev) => {
         if (rev.user.toString() === req.user._id.toString()) {
-          (rev.rating = rating), (rev.comment = comment);
+          const avatarUrl = await cloudinary.uploader.upload(
+            req.user.avatar.url,
+            {
+              folder: "products",
+            }
+          );
+          rev.reviews[0].avatar = avatarUrl.secure_url;
+
+          (rev.comment = comment), (rev.rating = rating);
         }
       });
     } else {
@@ -302,7 +310,6 @@ exports.deleteUserReview = async (req, res, next) => {
     const review = product.reviews.filter(
       (rev) => rev.user.toString() !== req.user._id.toString()
     );
-
 
     let avg = review.reduce((a, b) => a + b.rating, 0);
     product.reviews = review;
