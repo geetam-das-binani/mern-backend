@@ -142,7 +142,7 @@ exports.forgotPassword = async (req, res, next) => {
   const resetToken = user.getPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetPasswordUrl = `${process.env.FRONTEND_URL}/api/v1/password/reset/${resetToken}`;
+  const resetPasswordUrl = `https://mernecommercebackend-k5a2.onrender.com/api/v1/password/reset/${resetToken}`;
   const message = ` Your Password reset token is :- \n\n  ${resetPasswordUrl}
   \n 
   if you have not requested this email then , please ignore it.
