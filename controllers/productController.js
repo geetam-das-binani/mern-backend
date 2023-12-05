@@ -212,7 +212,7 @@ exports.createProductReview = async (req, res, next) => {
               folder: "products",
             }
           );
-          rev.reviews[0].avatar = avatarUrl.secure_url;
+          rev.avatar = avatarUrl.secure_url;
 
           (rev.comment = comment), (rev.rating = rating);
         }
