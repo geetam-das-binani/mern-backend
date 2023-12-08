@@ -54,10 +54,10 @@ app.use("/api/v1", paymentRoute);
 // middleware for error
 app.use(errorMiddleware);
 
-// app.use(express.static(path.join(__dirname, "./dist")));
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "./dist/index.html"));
-// });
+app.use(express.static(path.join(__dirname, "./dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./dist/index.html"));
+});
 connect(process.env.DATABASE_NAME, process.env.DATABASE_PASSWORD)
   .then(() => {
     console.log("Connected to Database Successfully");
