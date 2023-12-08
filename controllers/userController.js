@@ -117,7 +117,7 @@ exports.logOut = async (req, res, next) => {
       expires: new Date(Date.now()),
       httpOnly: true,
       secure: true, // Ensure it matches the original cookie configuration
-      sameSite: 'None', // If applicable for cross-origin requests
+      sameSite: "None", // If applicable for cross-origin requests
     });
     res.status(200).json({
       success: true,
@@ -141,8 +141,11 @@ exports.forgotPassword = async (req, res, next) => {
   //Get resetPassword Token
   const resetToken = user.getPasswordResetToken();
   await user.save({ validateBeforeSave: false });
+  // for running locally
+  // const resetPasswordUrl = `${process.env.FRONTEND_URL}/api/v1/password/reset/${resetToken}`;
 
-  const resetPasswordUrl = `https://mernecommercebackend-k5a2.onrender.com/api/v1/password/reset/${resetToken}`;
+  // for production
+  const resetPasswordUrl = `${process.env.BACKEND_URL}/api/v1/password/reset/${resetToken}`;
   const message = ` Your Password reset token is :- \n\n  ${resetPasswordUrl}
   \n 
   if you have not requested this email then , please ignore it.
