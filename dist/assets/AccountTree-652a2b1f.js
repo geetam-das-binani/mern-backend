@@ -1,1 +1,0 @@
-import{b6 as r,b7 as t,j as a}from"./index-d0d19506.js";var e={},u=t;Object.defineProperty(e,"__esModule",{value:!0});var v=e.default=void 0,o=u(r()),d=a,i=(0,o.default)((0,d.jsx)("path",{d:"M22 11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3z"}),"AccountTree");v=e.default=i;export{v as d};
