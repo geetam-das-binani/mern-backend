@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.TWILO_AUTH_KEY;
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
-    url: { 
+    url: {
       type: String,
       required: true,
     },
@@ -95,12 +95,12 @@ userSchema.methods.saveOtp = async function () {
     otp += digits[Math.floor(Math.random() * digits.length)];
   }
 
-   await client.messages.create({
+  await client.messages.create({
     body: `Your  login Otp is ${otp}.Valid for 10 minutes`,
-    from: "+12512902957",
+    from: '+13343452968',
     to: `+91${this.phoneNumber}`,
   });
-  
+
   this.otp = otp;
   this.resetOtpExpire = Date.now() + 10 * 60 * 1000;
 
