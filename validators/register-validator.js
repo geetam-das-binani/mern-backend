@@ -7,7 +7,7 @@ exports.registerSchema = z.object({
   name: z
     .string({ required_error: "Name is required" })
     .trim()
-    .min(3, { message: "Name must be atleast 3 characters" })
+    .min(5, { message: "Name must be atleast 3 characters" })
     .max(30, { message: "Name must not  be more than 30 characters" }),
 
   email: z
