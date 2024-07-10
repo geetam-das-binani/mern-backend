@@ -1,0 +1,1 @@
+import{j as a}from"./index-9eaefbd0.js";import{a as t}from"./Button-ab45b93f.js";function o(){return a.jsx("div",{className:"contact__container",children:a.jsx("a",{className:"mail__btn",href:"mailto:geetambinani6@gmail.com",children:a.jsx(t,{children:"Contact: mymailforgeetambinani6@gmail.com"})})})}export{o as default};
